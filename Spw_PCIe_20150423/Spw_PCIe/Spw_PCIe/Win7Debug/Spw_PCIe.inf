@@ -1,0 +1,92 @@
+;
+; Spw_PCIe.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$";只有WINDOWS NT和 CHICAGO
+Class=Multifunction ; 微软有特定的，可以查看设备类GUID文件夹
+ClassGuid={4d36e971-e325-11ce-bfc1-08002be10318} ; 
+Provider=%HIT-ATCI%
+CatalogFile=Spw_PCIe.cat
+DriverVer=04/10/2015,14.19.35.445
+
+[DestinationDirs]
+DefaultDestDir = 12
+;12表示C:\WINDOWS\System32\drivers目录
+
+; ================= Class section =====================
+;如果不是标准类设备，这里的配置是必须的
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+Spw_PCIe.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NTx86
+;VS自动生成，如果不是标准类别设备必须修改
+[Standard.NTx86]
+%Spw_PCIe.DeviceDesc%=Spw_PCIe_Device, PCI\VEN_0EE5&DEV_0811;在配置寄存器中定义了 
+
+[Spw_PCIe_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+Spw_PCIe.sys
+
+;-------------- Service installation
+[Spw_PCIe_Device.NT.Services]
+AddService = Spw_PCIe,%SPSVCINST_ASSOCSERVICE%, Spw_PCIe_Service_Inst
+
+; -------------- Spw_PCIe driver install sections
+[Spw_PCIe_Service_Inst]
+DisplayName    = %Spw_PCIe.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\Spw_PCIe.sys
+LoadOrderGroup = Extended Base
+
+;
+;--- Spw_PCIe_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+Spw_PCIe_Device_CoInstaller_CopyFiles = 11
+
+[Spw_PCIe_Device.NT.CoInstallers]
+AddReg=Spw_PCIe_Device_CoInstaller_AddReg
+CopyFiles=Spw_PCIe_Device_CoInstaller_CopyFiles
+
+[Spw_PCIe_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller01011.dll,WdfCoInstaller"
+
+[Spw_PCIe_Device_CoInstaller_CopyFiles]
+WdfCoInstaller01011.dll
+
+[SourceDisksFiles]
+WdfCoInstaller01011.dll=1 ; make sure the number matches with SourceDisksNames
+
+[Spw_PCIe_Device.NT.Wdf]
+KmdfService =  Spw_PCIe, Spw_PCIe_wdfsect
+[Spw_PCIe_wdfsect]
+KmdfLibraryVersion = 1.11
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="HIT-ATCI" ; 
+ClassName="Spw_PCIe" ; 
+DiskName = "Spw_PCIe Installation Disk"
+Spw_PCIe.DeviceDesc = "Spw_PCIe Device"
+Spw_PCIe.SVCDESC = "Spw_PCIe Service"

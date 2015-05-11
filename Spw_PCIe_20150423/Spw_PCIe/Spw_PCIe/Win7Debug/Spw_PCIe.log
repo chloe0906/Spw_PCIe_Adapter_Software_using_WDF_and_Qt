@@ -1,0 +1,38 @@
+﻿Build started 2015/4/10 14:19:35.
+     1>Project "F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Spw_PCIe\Spw_PCIe.vcxproj" on node 2 (Build target(s)).
+     1>StampInf:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\stampinf.exe -d "*" -a "x86" -v "*" -k "1.11" -u "1.11.0" -f Win7Debug\Spw_PCIe.inf 
+         Stamping Win7Debug\Spw_PCIe.inf [Version] section with DriverVer=04/10/2015,14.19.35.445
+       RunWpp:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\tracewpp.exe -cfgdir:"C:\Program Files (x86)\Windows Kits\8.1\bin\wppconfig\rev1" -scan:"trace.h" -odir:"Win7Debug\\" -km Device.c Driver.c Queue.c 
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /IWin7Debug\ /Zi /nologo /W4 /WX- /Od /Oi /Oy- /D _X86_=1 /D i386=1 /D STD_CALL /D DEPRECATE_DDK_FUNCTIONS=1 /D MSC_NOOPT /D _WIN32_WINNT=0x0601 /D WINVER=0x0601 /D WINNT=1 /D NTDDI_VERSION=0x06010000 /D DBG=1 /D KMDF_VERSION_MAJOR=1 /D KMDF_VERSION_MINOR=11 /GF /Gm- /Zp8 /GS /Gy /fp:precise /Zc:wchar_t- /Zc:forScope- /GR- /Fo"Win7Debug\\" /Fd"Win7Debug\vc120.pdb" /Gz /wd4748 /wd4603 /wd4627 /wd4986 /wd4987 /wd4996 /FI"C:\Program Files (x86)\Windows Kits\8.1\Include\Shared\warning.h" /analyze- /errorReport:prompt /kernel -cbstring /d1import_no_registry /d2AllowCompatibleILVersions /d2Zi+ Device.c Driver.c Queue.c
+         Device.c
+     1>Device.c(103): warning C4100: 'ResourceList' : unreferenced formal parameter
+     1>Device.c(151): warning C4100: 'ResourceListTranslated' : unreferenced formal parameter
+         Driver.c
+         Queue.c
+     1>Queue.c(16): warning C4101: 'queue' : unreferenced local variable
+     1>Queue.c(137): warning C4100: 'IoControlCode' : unreferenced formal parameter
+     1>Queue.c(136): warning C4100: 'InputBufferLength' : unreferenced formal parameter
+     1>Queue.c(135): warning C4100: 'OutputBufferLength' : unreferenced formal parameter
+     1>Queue.c(133): warning C4100: 'Queue' : unreferenced formal parameter
+     1>Queue.c(154): warning C4100: 'ActionFlags' : unreferenced formal parameter
+     1>Queue.c(153): warning C4100: 'Request' : unreferenced formal parameter
+     1>Queue.c(152): warning C4100: 'Queue' : unreferenced formal parameter
+         Generating Code...
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Spw_PCIe.sys" /VERSION:"6.3" /INCREMENTAL:NO /NOLOGO /WX /SECTION:"INIT,d" "C:\Program Files (x86)\Windows Kits\8.1\lib\win7\KM\x86\memcmp.lib" "C:\Program Files (x86)\Windows Kits\8.1\lib\win7\KM\x86\BufferOverflowK.lib" "C:\Program Files (x86)\Windows Kits\8.1\lib\win7\KM\x86\ntoskrnl.lib" "C:\Program Files (x86)\Windows Kits\8.1\lib\win7\KM\x86\hal.lib" "C:\Program Files (x86)\Windows Kits\8.1\lib\win7\KM\x86\wmilib.lib" "C:\Program Files (x86)\Windows Kits\8.1\lib\wdf\kmdf\x86\1.11\WdfLdr.lib" "C:\Program Files (x86)\Windows Kits\8.1\lib\wdf\kmdf\x86\1.11\WdfDriverEntry.lib" /NODEFAULTLIB /MANIFEST:NO /DEBUG /PDB:"F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Spw_PCIe.pdb" /SUBSYSTEM:NATIVE,"6.01" /Driver /OPT:REF /OPT:ICF /ENTRY:"FxDriverEntry@8" /RELEASE /IMPLIB:"F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Spw_PCIe.lib" /MERGE:"_TEXT=.text;_PAGE=PAGE" /MACHINE:X86 /PROFILE /kernel /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221 /osversion:6.3 /pdbcompress /debugtype:pdata Win7Debug\Device.obj
+         Win7Debug\Driver.obj
+         Win7Debug\Queue.obj
+         Spw_PCIe.vcxproj -> F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Spw_PCIe.sys
+       DriverTestSign:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\signtool.exe sign /ph /sha1 "65798E744CA9A9A62D7C0C5FD2D9E6D60DC4BF22" 
+         Done Adding Additional Store
+         Successfully signed: F:\Files\\Spw_PCIe_0\Spw_PCIe\Win7Debug\Spw_PCIe.sys
+         
+     1>Done Building Project "F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Spw_PCIe\Spw_PCIe.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.82

@@ -1,0 +1,10 @@
+﻿Build started 2015/4/10 14:23:51.
+     1>Project "F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Application_Spw_PCIe\Application_Spw_PCIe.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Application_Spw_PCIe.exe" /INCREMENTAL:NO /NOLOGO /WX setupapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Application_Spw_PCIe.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Application_Spw_PCIe.lib" /MACHINE:X86 /IGNORE:4198,4010,4037,4039,4065,4070,4078,4087,4089,4221 Win7Debug\Source.obj
+         Application_Spw_PCIe.vcxproj -> F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Win7Debug\Application_Spw_PCIe.exe
+     1>Done Building Project "F:\Files\毕业设计\Spw_PCIe_0\Spw_PCIe\Application_Spw_PCIe\Application_Spw_PCIe.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.54
