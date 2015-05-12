@@ -10,13 +10,13 @@
 
 NTSTATUS
 DriverEntry(
-    _In_ PDRIVER_OBJECT  DriverObject,
-    _In_ PUNICODE_STRING RegistryPath
+   IN PDRIVER_OBJECT  DriverObject,
+   IN PUNICODE_STRING RegistryPath
     )
 {
     WDF_DRIVER_CONFIG config;
-	WDFDRIVER   driver;
-    NTSTATUS status;
+	//WDFDRIVER   driver;//????
+    NTSTATUS status = STATUS_SUCCESS;
     WDF_OBJECT_ATTRIBUTES attributes;
 
     //
@@ -30,17 +30,20 @@ DriverEntry(
     // Register a cleanup callback so that we can call WPP_CLEANUP when
     // the framework driver object is deleted during driver unload.
     //
+	
+    WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
+
+    attributes.EvtCleanupCallback = Spw_PCIeEvtDriverContextCleanup;
+	
 	WDF_DRIVER_CONFIG_INIT(&config,
 		Spw_PCIeEvtDeviceAdd
 		);
-    WDF_OBJECT_ATTRIBUTES_INIT(&attributes);
-    attributes.EvtCleanupCallback = Spw_PCIeEvtDriverContextCleanup;
-	
+
     status = WdfDriverCreate(DriverObject,
                              RegistryPath,
                              &attributes,
                              &config,
-                             &driver
+                             WDF_NO_HANDLE
                              );
 
     if (!NT_SUCCESS(status)) {
@@ -54,6 +57,7 @@ DriverEntry(
     return status;
 }
 
+
 NTSTATUS
 Spw_PCIeEvtDeviceAdd(
     _In_    WDFDRIVER       Driver,
@@ -63,11 +67,11 @@ Spw_PCIeEvtDeviceAdd(
 	NTSTATUS status = STATUS_SUCCESS;
 	WDF_PNPPOWER_EVENT_CALLBACKS pnpPowerCallbacks;
 	WDF_OBJECT_ATTRIBUTES   deviceAttributes;
-	WDF_IO_QUEUE_CONFIG    queueConfig;
-
-	PDEVICE_CONTEXT deviceContext;
-	WDFQUEUE queue;
 	WDFDEVICE device;
+	PDEVICE_CONTEXT deviceContext;
+
+	WDFQUEUE queue;
+	WDF_IO_QUEUE_CONFIG    queueConfig;
 
 	/*+++++Interrupt
 	WDF_INTERRUPT_CONFIG	interruptConfig;
@@ -77,6 +81,16 @@ Spw_PCIeEvtDeviceAdd(
     UNREFERENCED_PARAMETER(Driver);
 
     PAGED_CODE();
+
+	//采用WdfDeviceIoDirect方式
+	WdfDeviceInitSetIoType(DeviceInit, WdfDeviceIoDirect);//WdfDeviceIoBuffered???重要吗？
+	//When the I/O manager sends a request for buffered I/O, the IRP contains an internal copy of the caller's buffer
+	//rather than the caller's buffer itself. The I/O manager copies data from the caller's buffer to the internal buffer
+	//during a write request or from the internal buffer to the caller's buffer when the driver completes a read
+	//request.
+	//The WDF driver receives a WDF request object, which in turn contains an embedded WDF memory object.
+	//The memory object contains the address of the buffer on which the driver should operate.
+
 
 
    // status = Spw_PCIeCreateDevice(DeviceInit);
@@ -93,18 +107,11 @@ Spw_PCIeEvtDeviceAdd(
 	//注册即插即用和电源管理例程
 	WdfDeviceInitSetPnpPowerEventCallbacks(DeviceInit, &pnpPowerCallbacks);
 
-	//采用WdfDeviceIoDirect方式
-	WdfDeviceInitSetIoType(DeviceInit, WdfDeviceIoBuffered);//WdfDeviceIoBuffered???重要吗？
-	//When the I/O manager sends a request for buffered I/O, the IRP contains an internal copy of the caller's buffer
-	//rather than the caller's buffer itself. The I/O manager copies data from the caller's buffer to the internal buffer
-	//during a write request or from the internal buffer to the caller's buffer when the driver completes a read
-	//request.
-	//The WDF driver receives a WDF request object, which in turn contains an embedded WDF memory object.
-	//The memory object contains the address of the buffer on which the driver should operate.
+	
 	WDF_OBJECT_ATTRIBUTES_INIT_CONTEXT_TYPE(&deviceAttributes, DEVICE_CONTEXT);
 
 
-	deviceAttributes.EvtCleanupCallback = Spw_PCIeEvtDriverContextCleanup;
+	//deviceAttributes.EvtCleanupCallback = Spw_PCIeEvtDriverContextCleanup;
 	//
 	// Set WDFDEVICE synchronization scope. By opting for device level
 	// synchronization scope, all the queue and timer callbacks are
@@ -116,8 +123,8 @@ Spw_PCIeEvtDeviceAdd(
 	if (!NT_SUCCESS(status)) {
 		return status;
 	}
-	deviceContext = GetDeviceContext(device);
-	deviceContext->Device = device;
+	deviceContext = GetDeviceContext(device);///????
+	//deviceContext->Device = device;
 	//
 	// 初始化Context这个结构里的所有成员.
 	//
@@ -149,9 +156,12 @@ Spw_PCIeEvtDeviceAdd(
 	//		queueConfig.EvtIoWrite = Spw_PCIeEvtIoWrite;
 	//queueConfig.EvtIoRead = Spw_PCIeEvtIoRead;
 	//		queueConfig.EvtIoStop = Spw_PCIeEvtIoStop;
+	//The driver must initialize the WDF_IO_QUEUE_CONFIG structure 
+	//by calling WDF_IO_QUEUE_CONFIG_INIT or WDF_IO_QUEUE_CONFIG_INIT_DEFAULT_QUEUE.
+	//用default初始化default 队列，用另一个初始化非default队列
 	WDF_IO_QUEUE_CONFIG_INIT(
 		&queueConfig,
-		WdfIoQueueDispatchManual
+		WdfIoQueueDispatchSequential
 		);
 
 	queueConfig.EvtIoDeviceControl = Spw_PCIeEvtIoDeviceControl;
@@ -175,7 +185,7 @@ Spw_PCIeEvtDeviceAdd(
 	//创建驱动程序接口与应用程序通信
 	status = WdfDeviceCreateDeviceInterface(
 		device,
-		&GUID_DEVINTERFACE_Spw_PCIe,
+		(LPGUID)&GUID_DEVINTERFACE_Spw_PCIe,
 		NULL // ReferenceString
 		);
 	if (!NT_SUCCESS(status)) {
@@ -189,7 +199,7 @@ Spw_PCIeEvtDeviceAdd(
 	status = Spw_PCIeQueueInitialize(device);
 	}
 	*/
-	deviceContext->MemLength = MAXNLEN;
+	//deviceContext->MemLength = MAXNLEN;
 
     //TraceEvents(TRACE_LEVEL_INFORMATION, TRACE_DRIVER, "%!FUNC! Exit");
 

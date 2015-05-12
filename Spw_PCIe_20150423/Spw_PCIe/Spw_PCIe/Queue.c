@@ -3,10 +3,10 @@
 
 #pragma warning(disable:4013)  // assuming extern returning int
 
-//#ifdef ALLOC_PRAGMA
-//#pragma alloc_text (PAGE, Spw_PCIeQueueInitialize)
+#ifdef ALLOC_PRAGMA
+#pragma alloc_text (PAGE, Spw_PCIeEvtIoDeviceControl)
 
-//#endif
+#endif
 /*
 单一的默认I/O队列和单一的请求处理函数，EvtIoDefault。KMDF将会将设备所有的请求发送到默认I/O队列，
 然后它会调用驱动程序的EvtIoDefault来将每一个请求递交给驱动程序。
@@ -196,65 +196,97 @@ return;
 
 VOID
 Spw_PCIeEvtIoDeviceControl(
-    _In_ WDFQUEUE Queue,
-    _In_ WDFREQUEST Request,
-    _In_ size_t OutputBufferLength,
-    _In_ size_t InputBufferLength,
-    _In_ ULONG IoControlCode
+    IN WDFQUEUE Queue,
+    IN WDFREQUEST Request,
+    IN size_t OutputBufferLength,
+    IN size_t InputBufferLength,
+    IN ULONG IoControlCode
     )
 {
     //TraceEvents(TRACE_LEVEL_INFORMATION, 
       //          TRACE_QUEUE, 
         //        "!FUNC! Queue 0x%p, Request 0x%p OutputBufferLength %d InputBufferLength %d IoControlCode %d", 
           //      Queue, Request, (int) OutputBufferLength, (int) InputBufferLength, IoControlCode);
+	WDFDEVICE device;
+	PDEVICE_CONTEXT pDevContext;
+	size_t    InBufferSize = 0;
+	size_t    OutBufferSize = 0;
+
 	NTSTATUS  status;
-	PVOID	  buffer;
-	size_t    InBufferSize;
-	size_t    OutBufferSize;
-	UCHAR	  x1, x2;
+	
+	WDFMEMORY memory;
+	PVOID	  inBuffer;
+	PVOID     outBuffer;
+//	ULONG     pRAM;
 
-	PAGED_CODE();
+	//PAGED_CODE();
+	device = WdfIoQueueGetDevice(Queue);
+	pDevContext = GetDeviceContext(device);
 
+	//if (InputBufferLength > 0){
+	//	//获取I/O请求的输入缓存和长度
+	//	status = WdfRequestRetrieveInputBuffer(Request, InputBufferLength, &inBuffer, &InBufferSize);
+	//	if (!NT_SUCCESS(status)){
+	//		WdfRequestComplete(Request, status);
+	//		return;
+	//	}
+	//}
+	//else{
+	//	inBuffer = NULL;
+	//	InBufferSize = 0;
+	//}
+	//if (OutputBufferLength > 0){
+	//	//获取I/O请求的输出缓存和长度
+	//	status = WdfRequestRetrieveOutputBuffer(Request, OutputBufferLength, &outBuffer, &OutBufferSize);
+	//	if (!NT_SUCCESS(status)){
+	//		WdfRequestComplete(Request, status);
+	//		return;
+	//	}
+	//}
+	//else{
+	//	outBuffer = NULL;
+	//	OutBufferSize = 0;
+	//}
 	switch (IoControlCode) {
-
-	case Spw_PCIe_IOCTL_BUFFERED:
-	case Spw_PCIe_IOCTL_IN_DIRECT:
-	case Spw_PCIe_IOCTL_OUT_DIRECT:
-		if (InputBufferLength == 0 || OutputBufferLength == 0)
-		{	//检查输入、输出参数有效性
-			WdfRequestComplete(Request, STATUS_INVALID_PARAMETER);
+//根据CTL_CODE请求码作相应的处理
+	case Spw_PCIe_IOCTL_IN_BUFFERED:
+		//
+		// Get input memory.
+		//
+		status = WdfRequestRetrieveInputMemory(
+			Request,
+			&memory
+			);
+		if (!NT_SUCCESS(status)){
+			goto Exit;
 		}
-		else
-		{
+		inBuffer = pDevContext->MemBaseAddress;
+		inBuffer = (PULONG)inBuffer + PCIE_WRITE_MEMORY_OFFSET;
+		InBufferSize = InputBufferLength;
+	//	inBuffer += PCIE_WRITE_MEMORY_OFFSET;
+		if (InBufferSize > MAXNLEN) InBufferSize = MAXNLEN;
+		//将应用程序的数据拷贝到FPGA的PCIE_WRITE_MEMORY_BASE中
+		status = WdfMemoryCopyToBuffer(memory, 0, inBuffer, InBufferSize);
+		if (status != STATUS_PENDING)
+			WdfRequestCompleteWithInformation(Request, status, InBufferSize);
+		break;
+	case Spw_PCIe_IOCTL_OUT_BUFFERED:
+			//Just think about the size of the data when you are choosing the METHOD.  
+		    //METHOD_BUFFERED is typically the fastest for small (less the 16KB) buffers, 
+		    //and METHOD_IN_DIRECT and METHOD_OUT_DIRECT should be used for larger buffers than that.
 			//METHOD_BUFFERED，METHOD_OUT_DIRECT，METHOD_IN_DIRECT三种方式，
 			//输入缓冲区地址可通过调用WdfRequestRetrieveInputBuffer函数获得
 			//输出缓冲区地址可通过调用WdfRequestRetrieveOutputBuffer函数获得
-
-			//获取输入缓冲区地址buffer,后两个参数分别返回缓冲区指针和长度
-			status = WdfRequestRetrieveInputBuffer(Request, 1, &buffer, NULL);
-			if (!NT_SUCCESS(status)) {
-				WdfRequestComplete(Request, STATUS_UNSUCCESSFUL);
-				break;
+			//
+			// Get output memory.
+			//
+			status = WdfRequestRetrieveOutputMemory(
+			Request,
+			&memory
+			);
+			if (!NT_SUCCESS(status)){
+				goto Exit;
 			}
-
-			//buffer表示输入缓冲区地址
-			//输入x1=应用程序传给驱动程序的数字
-			x1 = *(UCHAR *)buffer;
-
-			//获取输出缓冲区地址buffer
-			status = WdfRequestRetrieveOutputBuffer(Request, 1, &buffer, NULL);
-			if (!NT_SUCCESS(status)) {
-				WdfRequestComplete(Request, STATUS_UNSUCCESSFUL);
-				break;
-			}
-			//输入x2=应用程序通过输出缓冲区传给驱动程序的数字
-			x2 = *(UCHAR *)buffer;
-
-			*(UCHAR *)buffer = x1 + x2;
-
-			//完成I/O请求，驱动程序传给应用程序的数据长度为1字节
-			WdfRequestCompleteWithInformation(Request, STATUS_SUCCESS, 1);
-		}
 		break;
 
 	default:
@@ -262,8 +294,15 @@ Spw_PCIeEvtIoDeviceControl(
 		WdfRequestCompleteWithInformation(Request, status, 0);
 		break;
 	}
-    WdfRequestComplete(Request, STATUS_SUCCESS);
 
+Exit:
+	if (!NT_SUCCESS(status)) {
+		WdfRequestCompleteWithInformation(
+			Request,
+			status,
+			0
+			);
+	}
     return;
 }
 //

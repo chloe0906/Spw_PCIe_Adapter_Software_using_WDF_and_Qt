@@ -38,7 +38,7 @@ typedef struct _DEVICE_CONTEXT
     ULONG               PortCount;              // Number of assigned ports
     BOOLEAN             PortMapped;             // TRUE if mapped port addr
 	*/
-	WDFDEVICE           Device;
+//	WDFDEVICE           Device;
 	PVOID				MemBaseAddress;
 	ULONG				MemLength;
 } DEVICE_CONTEXT, *PDEVICE_CONTEXT;

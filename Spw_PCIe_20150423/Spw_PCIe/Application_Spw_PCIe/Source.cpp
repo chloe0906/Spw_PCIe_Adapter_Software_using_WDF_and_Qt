@@ -13,8 +13,8 @@ PCHAR
 GetDevicePath(
 IN  LPGUID InterfaceGuid
 );
-void doRead(void);
-void doWrite(void);
+///void doRead(void);
+//void doWrite(void);
 HANDLE hDevice = INVALID_HANDLE_VALUE;
 
 
@@ -40,12 +40,12 @@ int __cdecl main(int argc, char* argv[])
 	}
 
 	printf("OK.\n");
-	UCHAR	x1, x2, x;
+	UCHAR	x1, x;
 	ULONG	nOutput;	// Count written to bufOutput
 
-	x1 = 2; x2 = 6; x = x2;
+	x1 = 2; 
 	if (!DeviceIoControl(hDevice,
-		Spw_PCIe_IOCTL_BUFFERED,
+		Spw_PCIe_IOCTL_IN_BUFFERED,
 		&x1,
 		1,
 		&x,
@@ -56,44 +56,12 @@ int __cdecl main(int argc, char* argv[])
 	{
 		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
 //		goto exit;
+		return 0;
 	}
-	printf("BUFFERED  :%d+%d=%d\n", x1, x2, x);
+	printf("BUFFERED  :%d+1=%d\n", x1, x);
+	printf("close handle Y/N?\n");
 
-	x1 = 2; x2 = 6; x = x2;
-	if (!DeviceIoControl(hDevice,
-		Spw_PCIe_IOCTL_IN_DIRECT,
-		&x1,
-		1,
-		&x,
-		1,
-		&nOutput,
-		NULL)
-		)
-	{
-		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
-//		goto exit;
-	}
-	printf("IN_DIRECT :%d+%d=%d\n", x1, x2, x);
-
-	x1 = 2; x2 = 6; x = x2;
-	if (!DeviceIoControl(hDevice,
-		Spw_PCIe_IOCTL_OUT_DIRECT,
-		&x1,
-		1,
-		&x,
-		1,
-		&nOutput,
-		NULL)
-		)
-	{
-		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
-//		goto exit;
-	}
-	printf("OUT_DIRECT:%d+%d=%d\n", x1, x2, x);
-
-	//doWrite();
-	//doRead();
-	while (1);
+	while (getchar() != 'N');
 //exit:
 	if (hDevice != INVALID_HANDLE_VALUE) {
 		CloseHandle(hDevice);
@@ -182,53 +150,53 @@ IN  LPGUID InterfaceGuid
 	return DeviceInterfaceDetailData->DevicePath;
 
 }
+//
+//void doRead(void)
+//{
+//	char	buf[32], *f;
+//	ULONG	nRead;
+//	int i, j;
+//
+//	// Read data from driver
+//	printf("Reading from device - ");
+//	ReadFile(hDevice, buf, 32, &nRead, NULL);
+//	printf("%d bytes read from device.\n", nRead);
+//
+//	// Print what was read
+//	f = buf;
+//	for (i = 0; i<2; i++) {
+//		for (j = 0; j<16; j++) {
+//			fprintf(stderr, "%02x ", *f++);
+//		};
+//		fprintf(stderr, "\n");
+//	};
+//
+//}
 
-void doRead(void)
-{
-	char	buf[32], *f;
-	ULONG	nRead;
-	int i, j;
-
-	// Read data from driver
-	printf("Reading from device - ");
-	ReadFile(hDevice, buf, 32, &nRead, NULL);
-	printf("%d bytes read from device.\n", nRead);
-
-	// Print what was read
-	f = buf;
-	for (i = 0; i<2; i++) {
-		for (j = 0; j<16; j++) {
-			fprintf(stderr, "%02x ", *f++);
-		};
-		fprintf(stderr, "\n");
-	};
-
-}
-
-void doWrite(void)
-{
-	char	buf[32], *f;
-	ULONG	nWritten;
-	int		i, j;
-
-
-	for (i = 0; i<32; i++)
-	{
-		buf[i] = i;
-	}
-
-	// Write data to driver
-	printf("Writing to device - ");
-	WriteFile(hDevice, buf, 32, &nWritten, NULL);
-	printf("%d bytes written to device.\n", nWritten);
-
-	// Print what was written
-	f = buf;
-	for (i = 0; i<2; i++) {
-		for (j = 0; j<16; j++) {
-			fprintf(stderr, "%02x ", *f++);
-		};
-		fprintf(stderr, "\n");
-	};
-
-}
+//void doWrite(void)
+//{
+//	char	buf[32], *f;
+//	ULONG	nWritten;
+//	int		i, j;
+//
+//
+//	for (i = 0; i<32; i++)
+//	{
+//		buf[i] = i;
+//	}
+//
+//	// Write data to driver
+//	printf("Writing to device - ");
+//	WriteFile(hDevice, buf, 32, &nWritten, NULL);
+//	printf("%d bytes written to device.\n", nWritten);
+//
+//	// Print what was written
+//	f = buf;
+//	for (i = 0; i<2; i++) {
+//		for (j = 0; j<16; j++) {
+//			fprintf(stderr, "%02x ", *f++);
+//		};
+//		fprintf(stderr, "\n");
+//	};
+//
+//}

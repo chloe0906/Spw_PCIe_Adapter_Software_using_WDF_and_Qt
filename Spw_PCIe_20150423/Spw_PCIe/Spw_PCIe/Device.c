@@ -23,7 +23,7 @@ IN WDFCMRESLIST ResourceListTranslated
 {
 	ULONG		    i;
 	NTSTATUS        status = STATUS_SUCCESS;
-	PDEVICE_CONTEXT pDeviceContext = NULL;
+	PDEVICE_CONTEXT pDeviceContext;
 	/*
 	BOOLEAN                             foundPort      = FALSE;
     PHYSICAL_ADDRESS                    portBasePA     = {0};
@@ -113,8 +113,8 @@ IN WDFCMRESLIST ResourceListTranslated
 
 NTSTATUS
 Spw_PCIeEvtDeviceD0Entry(
-_In_ IN  WDFDEVICE Device,
-_In_ IN  WDF_POWER_DEVICE_STATE PreviousState
+IN  WDFDEVICE Device,
+IN  WDF_POWER_DEVICE_STATE PreviousState
 )
 {
 	UNREFERENCED_PARAMETER(Device);
@@ -126,8 +126,8 @@ _In_ IN  WDF_POWER_DEVICE_STATE PreviousState
 
 NTSTATUS
 Spw_PCIeEvtDeviceD0Exit(
-_In_ IN  WDFDEVICE Device,
-_In_ IN  WDF_POWER_DEVICE_STATE TargetState
+IN  WDFDEVICE Device,
+IN  WDF_POWER_DEVICE_STATE TargetState
 )
 {
 	UNREFERENCED_PARAMETER(Device);
