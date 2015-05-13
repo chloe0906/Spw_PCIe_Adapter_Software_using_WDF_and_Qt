@@ -214,9 +214,10 @@ Spw_PCIeEvtIoDeviceControl(
 
 	NTSTATUS  status;
 	
-	WDFMEMORY memory;
+//	WDFMEMORY memory;
 	PVOID	  inBuffer;
 	PVOID     outBuffer;
+	PVOID     WriteAddress;
 //	ULONG     pRAM;
 
 	//PAGED_CODE();
@@ -250,6 +251,19 @@ Spw_PCIeEvtIoDeviceControl(
 	switch (IoControlCode) {
 //根据CTL_CODE请求码作相应的处理
 	case Spw_PCIe_IOCTL_IN_BUFFERED:
+		status = WdfRequestRetrieveInputBuffer(
+			Request,
+			sizeof(ULONG),
+			&inBuffer,
+			NULL
+			);
+		(ULONG *)WriteAddress = (ULONG*)pDevContext->MemBaseAddress + PCIE_WRITE_MEMORY_OFFSET;
+		WRITE_REGISTER_ULONG(WriteAddress, *(ULONG*)inBuffer);
+		WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
+		if (!NT_SUCCESS(status)){
+			goto Exit;
+		}
+		break;
 		//
 	//	// Get input memory.
 	//	//
@@ -286,7 +300,8 @@ Spw_PCIeEvtIoDeviceControl(
 			&outBuffer,
 			NULL
 			);
-			*(ULONG*)outBuffer = *(ULONG*)pDevContext->MemBaseAddress;
+			*(ULONG*)outBuffer = pDevContext->MemBaseAddress;//read address
+			//*(ULONG*)outBuffer = *(ULONG*)pDevContext->MemBaseAddress + 1;//read data
 			WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
 			if (!NT_SUCCESS(status)){
 				goto Exit;

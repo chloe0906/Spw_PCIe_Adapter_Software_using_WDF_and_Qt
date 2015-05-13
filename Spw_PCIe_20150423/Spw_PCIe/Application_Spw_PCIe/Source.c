@@ -42,6 +42,28 @@ int __cdecl main(int argc, char* argv[])
 	while (getchar() != 'Y');
 	printf("OK.\n");
 	ULONG outBuffer;
+	ULONG inBuffer = 555;
+	//------------------write----------------------
+	//printf("continue to operate writing ? Y/N?\n");
+	//while (getchar() != 'Y');
+	//if (!DeviceIoControl(hDevice,
+	//	Spw_PCIe_IOCTL_IN_BUFFERED,
+	//	&inBuffer,
+	//	sizeof(ULONG),
+	//	NULL,
+	//	0,
+	//	&nOutput,
+	//	NULL)
+	//	)
+	//{
+	//	printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
+	//	printf("error happens! continue? Y/N?\n");
+	//	while (getchar() != 'Y');
+	//	//		goto exit;
+	//	return 0;
+	//}
+	//printf("write finished!\n");
+	//------------------read-----------------------
 	printf("continue to operate reading ? Y/N?\n");
 	while (getchar() != 'Y');
 	if (!DeviceIoControl(hDevice,
