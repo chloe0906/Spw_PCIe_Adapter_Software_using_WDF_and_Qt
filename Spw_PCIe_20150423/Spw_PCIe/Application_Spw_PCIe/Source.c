@@ -21,7 +21,7 @@ HANDLE hDevice = INVALID_HANDLE_VALUE;
 int __cdecl main(int argc, char* argv[])
 {
 	PCHAR  DevicePath;
-	
+	ULONG nOutput;
 	printf("Application Spw_PCIe starting...\n");
 	//在这里修改GUID
 	DevicePath = GetDevicePath((LPGUID)&GUID_DEVINTERFACE_Spw_PCIe);//这里是不是有问题，把GUID值改一下看是否还能成功？？
@@ -31,38 +31,40 @@ int __cdecl main(int argc, char* argv[])
 		FILE_SHARE_READ | FILE_SHARE_WRITE,
 		NULL,
 		OPEN_EXISTING,
-		0,
+		FILE_ATTRIBUTE_NORMAL,
 		NULL);//Creates or opens a file or I/O device. 
 
 	if (hDevice == INVALID_HANDLE_VALUE) {
 		printf("ERROR opening device: (%0x) returned from CreateFile\n", GetLastError());
 		return 0;
 	}
-
+	printf("continue? Y/N?\n");
+	while (getchar() != 'Y');
 	printf("OK.\n");
-	UCHAR	x1, x;
-	ULONG	nOutput;	// Count written to bufOutput
-
-	x1 = 2; 
+	ULONG outBuffer;
+	printf("continue to operate reading ? Y/N?\n");
+	while (getchar() != 'Y');
 	if (!DeviceIoControl(hDevice,
-		Spw_PCIe_IOCTL_IN_BUFFERED,
-		&x1,
-		1,
-		&x,
-		1,
+		Spw_PCIe_IOCTL_OUT_BUFFERED,
+		NULL,
+		0,
+		&outBuffer,
+		sizeof(ULONG),
 		&nOutput,
 		NULL)
 		)
 	{
 		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
-//		goto exit;
+		printf("error happens! continue? Y/N?\n");
+		while (getchar() != 'Y');
+		//		goto exit;
 		return 0;
 	}
-	printf("BUFFERED  :%d+1=%d\n", x1, x);
-	printf("close handle Y/N?\n");
-
-	while (getchar() != 'N');
-//exit:
+	printf("data:%x\n", outBuffer);
+	printf("datasize:%d\n", nOutput);
+	printf("continue to close? Y/N?\n");
+	while (getchar() != 'Y');
+	//exit:
 	if (hDevice != INVALID_HANDLE_VALUE) {
 		CloseHandle(hDevice);
 	}

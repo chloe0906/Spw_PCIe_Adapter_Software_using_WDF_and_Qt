@@ -251,25 +251,25 @@ Spw_PCIeEvtIoDeviceControl(
 //根据CTL_CODE请求码作相应的处理
 	case Spw_PCIe_IOCTL_IN_BUFFERED:
 		//
-		// Get input memory.
-		//
-		status = WdfRequestRetrieveInputMemory(
-			Request,
-			&memory
-			);
-		if (!NT_SUCCESS(status)){
-			goto Exit;
-		}
-		inBuffer = pDevContext->MemBaseAddress;
-		inBuffer = (PULONG)inBuffer + PCIE_WRITE_MEMORY_OFFSET;
-		InBufferSize = InputBufferLength;
-	//	inBuffer += PCIE_WRITE_MEMORY_OFFSET;
-		if (InBufferSize > MAXNLEN) InBufferSize = MAXNLEN;
-		//将应用程序的数据拷贝到FPGA的PCIE_WRITE_MEMORY_BASE中
-		status = WdfMemoryCopyToBuffer(memory, 0, inBuffer, InBufferSize);
-		if (status != STATUS_PENDING)
-			WdfRequestCompleteWithInformation(Request, status, InBufferSize);
-		break;
+	//	// Get input memory.
+	//	//
+	//	status = WdfRequestRetrieveInputMemory(
+	//		Request,
+	//		&memory
+	//		);
+	//	if (!NT_SUCCESS(status)){
+	//		goto Exit;
+	//	}
+	//	inBuffer = pDevContext->MemBaseAddress;
+	//	inBuffer = (PULONG)inBuffer + PCIE_WRITE_MEMORY_OFFSET;
+	//	InBufferSize = InputBufferLength;
+	////	inBuffer += PCIE_WRITE_MEMORY_OFFSET;
+	//	if (InBufferSize > MAXNLEN) InBufferSize = MAXNLEN;
+	//	//将应用程序的数据拷贝到FPGA的PCIE_WRITE_MEMORY_BASE中
+	//	status = WdfMemoryCopyToBuffer(memory, 0, inBuffer, InBufferSize);
+	//	if (status != STATUS_PENDING)
+	//		WdfRequestCompleteWithInformation(Request, status, InBufferSize);
+	//	break;
 	case Spw_PCIe_IOCTL_OUT_BUFFERED:
 			//Just think about the size of the data when you are choosing the METHOD.  
 		    //METHOD_BUFFERED is typically the fastest for small (less the 16KB) buffers, 
@@ -280,10 +280,14 @@ Spw_PCIeEvtIoDeviceControl(
 			//
 			// Get output memory.
 			//
-			status = WdfRequestRetrieveOutputMemory(
+			status = WdfRequestRetrieveOutputBuffer(
 			Request,
-			&memory
+			sizeof(ULONG),
+			&outBuffer,
+			NULL
 			);
+			*(ULONG*)outBuffer = *(ULONG*)pDevContext->MemBaseAddress;
+			WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
 			if (!NT_SUCCESS(status)){
 				goto Exit;
 			}
