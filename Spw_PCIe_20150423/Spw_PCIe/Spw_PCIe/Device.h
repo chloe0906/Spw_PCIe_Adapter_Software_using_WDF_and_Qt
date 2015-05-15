@@ -1,6 +1,6 @@
 #include "public.h"
 
-#define PCIE_WRITE_MEMORY_OFFSET 0x20000//FPGA里相对于BAR0的偏移地址
+#define PCIE_WRITE_MEMORY_OFFSET 0x120001//FPGA里相对于BAR0的偏移地址
 #define PCIE_READ_MEMORY_OFFSET 0x22000
 /*+++++++++DMA
 //MAXNLEN：DMA传输最大字节长度
@@ -40,6 +40,7 @@ typedef struct _DEVICE_CONTEXT
 	*/
 //	WDFDEVICE           Device;
 	PVOID				MemBaseAddress;
+	ULONG            PhysicalAddressRegister;
 	ULONG				MemLength;
 } DEVICE_CONTEXT, *PDEVICE_CONTEXT;
 

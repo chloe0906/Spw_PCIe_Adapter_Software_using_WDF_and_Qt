@@ -21,4 +21,7 @@ DriverEntry()加了 WDFDRIVER  driver;
 Device.c
 WdfDeviceInitSetIoType改成了WdfDeviceIoBuffered模式
 
+//--------------------------------------------------------
+读写方式改成buffer而不是memory，就不发生蓝屏了
+
  

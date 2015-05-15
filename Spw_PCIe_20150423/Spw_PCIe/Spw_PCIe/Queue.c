@@ -209,15 +209,15 @@ Spw_PCIeEvtIoDeviceControl(
           //      Queue, Request, (int) OutputBufferLength, (int) InputBufferLength, IoControlCode);
 	WDFDEVICE device;
 	PDEVICE_CONTEXT pDevContext;
-	size_t    InBufferSize = 0;
-	size_t    OutBufferSize = 0;
+	//size_t    InBufferSize = 0;
+	//size_t    OutBufferSize = 0;
 
 	NTSTATUS  status;
 	
 //	WDFMEMORY memory;
 	PVOID	  inBuffer;
 	PVOID     outBuffer;
-	PVOID     WriteAddress;
+//	PVOID     WriteAddress;
 //	ULONG     pRAM;
 
 	//PAGED_CODE();
@@ -251,18 +251,18 @@ Spw_PCIeEvtIoDeviceControl(
 	switch (IoControlCode) {
 //根据CTL_CODE请求码作相应的处理
 	case Spw_PCIe_IOCTL_IN_BUFFERED:
-		status = WdfRequestRetrieveInputBuffer(
-			Request,
-			sizeof(ULONG),
-			&inBuffer,
-			NULL
-			);
-		(ULONG *)WriteAddress = (ULONG*)pDevContext->MemBaseAddress + PCIE_WRITE_MEMORY_OFFSET;
-		WRITE_REGISTER_ULONG(WriteAddress, *(ULONG*)inBuffer);
-		WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
-		if (!NT_SUCCESS(status)){
-			goto Exit;
-		}
+			status = WdfRequestRetrieveInputBuffer(
+				Request,
+				sizeof(ULONG),
+				&inBuffer,
+				NULL
+				);
+		//(ULONG *)WriteAddress = (ULONG*)pDevContext->MemBaseAddress + PCIE_WRITE_MEMORY_OFFSET;
+			*(ULONG*)WDF_PTR_ADD_OFFSET(pDevContext->MemBaseAddress, PCIE_WRITE_MEMORY_OFFSET) = *(ULONG*)inBuffer;
+			WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
+			if (!NT_SUCCESS(status)){
+				goto Exit;
+			}
 		break;
 		//
 	//	// Get input memory.
@@ -285,6 +285,23 @@ Spw_PCIeEvtIoDeviceControl(
 	//		WdfRequestCompleteWithInformation(Request, status, InBufferSize);
 	//	break;
 	case Spw_PCIe_IOCTL_OUT_BUFFERED:
+		status = WdfRequestRetrieveOutputBuffer(
+			Request,
+			sizeof(ULONG),
+			&outBuffer,
+			NULL
+			);
+		//*(ULONG*)outBuffer = pDevContext->MemBaseAddress;//read virtual address
+		//*(ULONG*)outBuffer = pDevContext->PhysicalAddressRegister;//read virtual address
+		//*(ULONG*)outBuffer = descriptor->u.Memory.Start;
+		//*(ULONG*)outBuffer = *(ULONG*)pDevContext->MemBaseAddress + 1;//read data
+		*(ULONG*)outBuffer = *(ULONG*)WDF_PTR_ADD_OFFSET(pDevContext->MemBaseAddress, PCIE_WRITE_MEMORY_OFFSET);
+		WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
+		if (!NT_SUCCESS(status)){
+			goto Exit;
+		}
+		break;
+	case Spw_PCIe_IOCTL_READ_PADDRESS:
 			//Just think about the size of the data when you are choosing the METHOD.  
 		    //METHOD_BUFFERED is typically the fastest for small (less the 16KB) buffers, 
 		    //and METHOD_IN_DIRECT and METHOD_OUT_DIRECT should be used for larger buffers than that.
@@ -300,7 +317,9 @@ Spw_PCIeEvtIoDeviceControl(
 			&outBuffer,
 			NULL
 			);
-			*(ULONG*)outBuffer = pDevContext->MemBaseAddress;//read address
+			//*(ULONG*)outBuffer = pDevContext->MemBaseAddress;//read virtual address
+			*(ULONG*)outBuffer = pDevContext->PhysicalAddressRegister;//read virtual address
+			//*(ULONG*)outBuffer = descriptor->u.Memory.Start;
 			//*(ULONG*)outBuffer = *(ULONG*)pDevContext->MemBaseAddress + 1;//read data
 			WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
 			if (!NT_SUCCESS(status)){

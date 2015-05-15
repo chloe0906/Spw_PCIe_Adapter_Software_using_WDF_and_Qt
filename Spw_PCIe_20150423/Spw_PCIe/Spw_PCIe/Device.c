@@ -65,6 +65,7 @@ IN WDFCMRESLIST ResourceListTranslated
 
 		case CmResourceTypeMemory:
 			//MmMapIoSpace将物理地址转换成系统内核模式地址
+			pDeviceContext->PhysicalAddressRegister = descriptor->u.Memory.Start.LowPart;
 			pDeviceContext->MemBaseAddress = MmMapIoSpace(
 				descriptor->u.Memory.Start,
 				descriptor->u.Memory.Length,

@@ -43,28 +43,73 @@ int __cdecl main(int argc, char* argv[])
 	printf("OK.\n");
 	ULONG outBuffer;
 	ULONG inBuffer = 555;
-	//------------------write----------------------
-	//printf("continue to operate writing ? Y/N?\n");
-	//while (getchar() != 'Y');
-	//if (!DeviceIoControl(hDevice,
-	//	Spw_PCIe_IOCTL_IN_BUFFERED,
-	//	&inBuffer,
-	//	sizeof(ULONG),
-	//	NULL,
-	//	0,
-	//	&nOutput,
-	//	NULL)
-	//	)
-	//{
-	//	printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
-	//	printf("error happens! continue? Y/N?\n");
-	//	while (getchar() != 'Y');
-	//	//		goto exit;
-	//	return 0;
-	//}
-	//printf("write finished!\n");
+	//------------------read physical address-----------------------
+	printf("continue to operate reading physical address? Y/N?\n");
+	while (getchar() != 'Y');
+	if (!DeviceIoControl(hDevice,
+		Spw_PCIe_IOCTL_READ_PADDRESS,
+		NULL,
+		0,
+		&outBuffer,
+		sizeof(ULONG),
+		&nOutput,
+		NULL)
+		)
+	{
+		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
+		printf("error happens! continue? Y/N?\n");
+		while (getchar() != 'Y');
+		//		goto exit;
+		return 0;
+	}
+	printf("PAddress data:%x\n", outBuffer);
+	printf("datasize:%d\n", nOutput);
 	//------------------read-----------------------
-	printf("continue to operate reading ? Y/N?\n");
+	nOutput = 0;
+	printf("continue to operate reading PAddress data? Y/N?\n");
+	while (getchar() != 'Y');
+	if (!DeviceIoControl(hDevice,
+		Spw_PCIe_IOCTL_OUT_BUFFERED,
+		NULL,
+		0,
+		&outBuffer,
+		sizeof(ULONG),
+		&nOutput,
+		NULL)
+		)
+	{
+		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
+		printf("error happens! continue? Y/N?\n");
+		while (getchar() != 'Y');
+		//		goto exit;
+		return 0;
+	}
+	printf("data:%x\n", outBuffer);
+	printf("datasize:%d\n", nOutput);
+	//------------------write----------------------
+	printf("continue to operate writing ? Y/N?\n");
+	while (getchar() != 'Y');
+	if (!DeviceIoControl(hDevice,
+		Spw_PCIe_IOCTL_IN_BUFFERED,
+		&inBuffer,
+		sizeof(ULONG),
+		NULL,
+		0,
+		&nOutput,
+		NULL)
+		)
+	{
+		printf("ERROR: DeviceIoControl returns %0x.", GetLastError());
+		printf("error happens! continue? Y/N?\n");
+		while (getchar() != 'Y');
+		//		goto exit;
+		return 0;
+	}
+	printf("write data :555 finished!\n");
+	printf("datasize:%d\n", nOutput);
+	//------------------read-----------------------
+	nOutput = 0;
+	printf("continue to operate reading PAddress data? Y/N?\n");
 	while (getchar() != 'Y');
 	if (!DeviceIoControl(hDevice,
 		Spw_PCIe_IOCTL_OUT_BUFFERED,

@@ -8,7 +8,7 @@ Class=Multifunction ; 微软有特定的，可以查看设备类GUID文件夹
 ClassGuid={4d36e971-e325-11ce-bfc1-08002be10318} ; 
 Provider=%HIT-ATCI%
 CatalogFile=Spw_PCIe.cat
-DriverVer=05/13/2015,16.23.43.79
+DriverVer=05/14/2015,10.58.38.937
 
 [DestinationDirs]
 DefaultDestDir = 12
