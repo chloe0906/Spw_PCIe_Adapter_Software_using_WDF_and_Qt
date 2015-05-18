@@ -258,7 +258,7 @@ Spw_PCIeEvtIoDeviceControl(
 				NULL
 				);
 		//(ULONG *)WriteAddress = (ULONG*)pDevContext->MemBaseAddress + PCIE_WRITE_MEMORY_OFFSET;
-			*(ULONG*)WDF_PTR_ADD_OFFSET(pDevContext->MemBaseAddress, PCIE_WRITE_MEMORY_OFFSET) = *(ULONG*)inBuffer;
+			*(ULONG*)WDF_PTR_ADD_OFFSET(pDevContext->BAR0_VirtualAddress, PCIE_WRITE_MEMORY_OFFSET) = *(ULONG*)inBuffer;
 			WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
 			if (!NT_SUCCESS(status)){
 				goto Exit;
@@ -295,7 +295,11 @@ Spw_PCIeEvtIoDeviceControl(
 		//*(ULONG*)outBuffer = pDevContext->PhysicalAddressRegister;//read virtual address
 		//*(ULONG*)outBuffer = descriptor->u.Memory.Start;
 		//*(ULONG*)outBuffer = *(ULONG*)pDevContext->MemBaseAddress + 1;//read data
-		*(ULONG*)outBuffer = *(ULONG*)WDF_PTR_ADD_OFFSET(pDevContext->MemBaseAddress, PCIE_WRITE_MEMORY_OFFSET);
+		//--------------------------------------------------------------------------
+		*(ULONG*)outBuffer = *(ULONG*)WDF_PTR_ADD_OFFSET(pDevContext->BAR0_VirtualAddress, PCIE_WRITE_MEMORY_OFFSET);
+		//--------------------------------------------------------------------------
+		//*(ULONG*)outBuffer = pDevContext->Counter_i;
+		//--------------------------------------------------------------------------
 		WdfRequestCompleteWithInformation(Request, status, sizeof(ULONG));
 		if (!NT_SUCCESS(status)){
 			goto Exit;

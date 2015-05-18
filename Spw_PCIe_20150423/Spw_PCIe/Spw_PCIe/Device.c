@@ -51,7 +51,7 @@ IN WDFCMRESLIST ResourceListTranslated
 
 	pDeviceContext = GetDeviceContext(Device);
 	pDeviceContext->MemBaseAddress = NULL;
-
+	pDeviceContext->Counter_i = 0;
 	//通过如下方式获取内存空间
 	for (i = 0; i < WdfCmResourceListGetCount(ResourceListTranslated); i++) {
 
@@ -65,7 +65,14 @@ IN WDFCMRESLIST ResourceListTranslated
 
 		case CmResourceTypeMemory:
 			//MmMapIoSpace将物理地址转换成系统内核模式地址
-			pDeviceContext->PhysicalAddressRegister = descriptor->u.Memory.Start.LowPart;
+			if (i == 0){
+				pDeviceContext->PhysicalAddressRegister = descriptor->u.Memory.Start.LowPart;
+				pDeviceContext->BAR0_VirtualAddress = MmMapIoSpace(
+					descriptor->u.Memory.Start,
+					descriptor->u.Memory.Length,
+					MmNonCached);
+			}
+			
 			pDeviceContext->MemBaseAddress = MmMapIoSpace(
 				descriptor->u.Memory.Start,
 				descriptor->u.Memory.Length,
@@ -81,7 +88,7 @@ IN WDFCMRESLIST ResourceListTranslated
 			return STATUS_INSUFFICIENT_RESOURCES;
 		}
 	}
-
+	pDeviceContext->Counter_i = i;
 	DbgPrint("EvtDevicePrepareHardware - ends\n");
 
 	return STATUS_SUCCESS;

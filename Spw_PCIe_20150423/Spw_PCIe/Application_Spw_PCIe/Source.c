@@ -66,7 +66,7 @@ int __cdecl main(int argc, char* argv[])
 	printf("datasize:%d\n", nOutput);
 	//------------------read-----------------------
 	nOutput = 0;
-	printf("continue to operate reading PAddress data? Y/N?\n");
+	printf("continue to operate reading resource i? Y/N?\n");
 	while (getchar() != 'Y');
 	if (!DeviceIoControl(hDevice,
 		Spw_PCIe_IOCTL_OUT_BUFFERED,
@@ -84,10 +84,12 @@ int __cdecl main(int argc, char* argv[])
 		//		goto exit;
 		return 0;
 	}
-	printf("data:%x\n", outBuffer);
+	printf("i data:%x\n", outBuffer);
 	printf("datasize:%d\n", nOutput);
 	//------------------write----------------------
 	printf("continue to operate writing ? Y/N?\n");
+	printf("input write data:");
+	scanf("%d", &inBuffer);
 	while (getchar() != 'Y');
 	if (!DeviceIoControl(hDevice,
 		Spw_PCIe_IOCTL_IN_BUFFERED,
@@ -105,7 +107,7 @@ int __cdecl main(int argc, char* argv[])
 		//		goto exit;
 		return 0;
 	}
-	printf("write data :555 finished!\n");
+	printf("write data :%d finished!\n",inBuffer);
 	printf("datasize:%d\n", nOutput);
 	//------------------read-----------------------
 	nOutput = 0;
@@ -127,7 +129,7 @@ int __cdecl main(int argc, char* argv[])
 		//		goto exit;
 		return 0;
 	}
-	printf("data:%x\n", outBuffer);
+	printf("data:%d\n", outBuffer);
 	printf("datasize:%d\n", nOutput);
 	printf("continue to close? Y/N?\n");
 	while (getchar() != 'Y');
