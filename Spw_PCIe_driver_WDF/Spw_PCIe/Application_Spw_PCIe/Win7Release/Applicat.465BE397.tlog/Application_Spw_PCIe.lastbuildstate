@@ -1,0 +1,2 @@
+#TargetFrameworkVersion=v4.5:PlatformToolSet=WindowsApplicationForDrivers8.1:EnableManagedIncrementalBuild=false:VCToolArchitecture=Native32Bit
+Win7 Release|Win32|C:\Users\健捷\Documents\GitHub\Spw_PCIe_driver_usingWDF\Spw_PCIe_20150423\Spw_PCIe\|

@@ -1,8 +1,0 @@
-﻿Build started 2015/5/6 17:04:17.
-     1>Project "F:\Files\毕业设计\Spw_PCIe_20150423\Spw_PCIe\Spw_PCIe Package\Spw_PCIe Package.vcxproj" on node 2 (Build target(s)).
-     1>C:\Program Files (x86)\Windows Kits\8.1\build\WindowsDriver.common.targets(1366,5): error MSB3030: Could not copy the file "F:\Files\毕业设计\Spw_PCIe_20150423\Spw_PCIe\Win7Release\Spw_PCIe.sys" because it was not found.
-     1>Done Building Project "F:\Files\毕业设计\Spw_PCIe_20150423\Spw_PCIe\Spw_PCIe Package\Spw_PCIe Package.vcxproj" (Build target(s)) -- FAILED.
-
-Build FAILED.
-
-Time Elapsed 00:00:00.03

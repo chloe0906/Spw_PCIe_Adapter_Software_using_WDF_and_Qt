@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>red.png</file>
+        <file>Spw_PCIe.ico</file>
+    </qresource>
+</RCC>
